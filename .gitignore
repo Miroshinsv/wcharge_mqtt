@@ -1,0 +1,17 @@
+
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.dtmp
+*.test
+
+*.out
+
+go.work
+
+go.mod
+
+.idea
+.vscode

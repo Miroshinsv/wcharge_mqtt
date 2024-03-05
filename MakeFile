@@ -1,0 +1,22 @@
+include .env
+export
+
+LOCAL_BIN:=$(CURDIR)
+PATH:=$(LOCAL_BIN):$(PATH)
+
+
+genv1: ### generate go files - grpc md $(LOCAL_BIN)/gen/v1
+	protoc -I proto --go-grpc_out=./gen/v1 --go-grpc_opt=paths=source_relative --go_out=./gen/v1 --go_opt=paths=source_relative proto/proto.proto
+.PHONY: genv1
+
+run: ### run wcharge_mqtt app
+	go run .\cmd\wcharge_mqtt\main.go
+.PHONY: run
+
+docker-build:
+	docker build  -t lexlutter/wcharge-mqtt:0.0.1 .
+.PHONY: docker-build
+
+docker-start:
+	docker-compose up -d
+.PHONY: docker-start
