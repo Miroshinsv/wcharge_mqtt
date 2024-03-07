@@ -22,14 +22,14 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MqttMiddlewareV1Client interface {
-	PushPowerBank(ctx context.Context, in *RequestPush, opts ...grpc.CallOption) (*ResponsePush, error)
-	ForcePushPowerBank(ctx context.Context, in *RequestPush, opts ...grpc.CallOption) (*ResponsePush, error)
-	QueryInventory(ctx context.Context, in *RequestInventory, opts ...grpc.CallOption) (*ResponseInventory, error)
-	QueryServerInformation(ctx context.Context, in *RequestServerInformation, opts ...grpc.CallOption) (*ResponseServerInformation, error)
-	QueryCabinetAPN(ctx context.Context, in *RequestCabinetAPN, opts ...grpc.CallOption) (*ResponseCabinetAPN, error)
-	QuerySIMCardICCID(ctx context.Context, in *RequestSIMCardICCID, opts ...grpc.CallOption) (*ResponseSIMCardICCID, error)
-	QueryNetworkInformation(ctx context.Context, in *RequestNetworkInformation, opts ...grpc.CallOption) (*ResponseNetworkInformation, error)
-	ResetCabinet(ctx context.Context, in *RequestResetCabinet, opts ...grpc.CallOption) (*ResponseResetCabinet, error)
+	PushPowerBank(ctx context.Context, in *CommandPush, opts ...grpc.CallOption) (*ResponsePush, error)
+	ForcePushPowerBank(ctx context.Context, in *CommandPush, opts ...grpc.CallOption) (*ResponsePush, error)
+	QueryInventory(ctx context.Context, in *CommandInventory, opts ...grpc.CallOption) (*ResponseInventory, error)
+	QueryServerInformation(ctx context.Context, in *CommandServerInformation, opts ...grpc.CallOption) (*ResponseServerInformation, error)
+	QueryCabinetAPN(ctx context.Context, in *CommandCabinetAPN, opts ...grpc.CallOption) (*ResponseCabinetAPN, error)
+	QuerySIMCardICCID(ctx context.Context, in *CommandSIMCardICCID, opts ...grpc.CallOption) (*ResponseSIMCardICCID, error)
+	QueryNetworkInformation(ctx context.Context, in *CommandNetworkInformation, opts ...grpc.CallOption) (*ResponseNetworkInformation, error)
+	ResetCabinet(ctx context.Context, in *CommandResetCabinet, opts ...grpc.CallOption) (*ResponseResetCabinet, error)
 	Subscribe(ctx context.Context, in *Device, opts ...grpc.CallOption) (*ResponseString, error)
 }
 
@@ -41,7 +41,7 @@ func NewMqttMiddlewareV1Client(cc grpc.ClientConnInterface) MqttMiddlewareV1Clie
 	return &mqttMiddlewareV1Client{cc}
 }
 
-func (c *mqttMiddlewareV1Client) PushPowerBank(ctx context.Context, in *RequestPush, opts ...grpc.CallOption) (*ResponsePush, error) {
+func (c *mqttMiddlewareV1Client) PushPowerBank(ctx context.Context, in *CommandPush, opts ...grpc.CallOption) (*ResponsePush, error) {
 	out := new(ResponsePush)
 	err := c.cc.Invoke(ctx, "/wcharge_mqtt.MqttMiddlewareV1/PushPowerBank", in, out, opts...)
 	if err != nil {
@@ -50,7 +50,7 @@ func (c *mqttMiddlewareV1Client) PushPowerBank(ctx context.Context, in *RequestP
 	return out, nil
 }
 
-func (c *mqttMiddlewareV1Client) ForcePushPowerBank(ctx context.Context, in *RequestPush, opts ...grpc.CallOption) (*ResponsePush, error) {
+func (c *mqttMiddlewareV1Client) ForcePushPowerBank(ctx context.Context, in *CommandPush, opts ...grpc.CallOption) (*ResponsePush, error) {
 	out := new(ResponsePush)
 	err := c.cc.Invoke(ctx, "/wcharge_mqtt.MqttMiddlewareV1/ForcePushPowerBank", in, out, opts...)
 	if err != nil {
@@ -59,7 +59,7 @@ func (c *mqttMiddlewareV1Client) ForcePushPowerBank(ctx context.Context, in *Req
 	return out, nil
 }
 
-func (c *mqttMiddlewareV1Client) QueryInventory(ctx context.Context, in *RequestInventory, opts ...grpc.CallOption) (*ResponseInventory, error) {
+func (c *mqttMiddlewareV1Client) QueryInventory(ctx context.Context, in *CommandInventory, opts ...grpc.CallOption) (*ResponseInventory, error) {
 	out := new(ResponseInventory)
 	err := c.cc.Invoke(ctx, "/wcharge_mqtt.MqttMiddlewareV1/QueryInventory", in, out, opts...)
 	if err != nil {
@@ -68,7 +68,7 @@ func (c *mqttMiddlewareV1Client) QueryInventory(ctx context.Context, in *Request
 	return out, nil
 }
 
-func (c *mqttMiddlewareV1Client) QueryServerInformation(ctx context.Context, in *RequestServerInformation, opts ...grpc.CallOption) (*ResponseServerInformation, error) {
+func (c *mqttMiddlewareV1Client) QueryServerInformation(ctx context.Context, in *CommandServerInformation, opts ...grpc.CallOption) (*ResponseServerInformation, error) {
 	out := new(ResponseServerInformation)
 	err := c.cc.Invoke(ctx, "/wcharge_mqtt.MqttMiddlewareV1/QueryServerInformation", in, out, opts...)
 	if err != nil {
@@ -77,7 +77,7 @@ func (c *mqttMiddlewareV1Client) QueryServerInformation(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *mqttMiddlewareV1Client) QueryCabinetAPN(ctx context.Context, in *RequestCabinetAPN, opts ...grpc.CallOption) (*ResponseCabinetAPN, error) {
+func (c *mqttMiddlewareV1Client) QueryCabinetAPN(ctx context.Context, in *CommandCabinetAPN, opts ...grpc.CallOption) (*ResponseCabinetAPN, error) {
 	out := new(ResponseCabinetAPN)
 	err := c.cc.Invoke(ctx, "/wcharge_mqtt.MqttMiddlewareV1/QueryCabinetAPN", in, out, opts...)
 	if err != nil {
@@ -86,7 +86,7 @@ func (c *mqttMiddlewareV1Client) QueryCabinetAPN(ctx context.Context, in *Reques
 	return out, nil
 }
 
-func (c *mqttMiddlewareV1Client) QuerySIMCardICCID(ctx context.Context, in *RequestSIMCardICCID, opts ...grpc.CallOption) (*ResponseSIMCardICCID, error) {
+func (c *mqttMiddlewareV1Client) QuerySIMCardICCID(ctx context.Context, in *CommandSIMCardICCID, opts ...grpc.CallOption) (*ResponseSIMCardICCID, error) {
 	out := new(ResponseSIMCardICCID)
 	err := c.cc.Invoke(ctx, "/wcharge_mqtt.MqttMiddlewareV1/QuerySIMCardICCID", in, out, opts...)
 	if err != nil {
@@ -95,7 +95,7 @@ func (c *mqttMiddlewareV1Client) QuerySIMCardICCID(ctx context.Context, in *Requ
 	return out, nil
 }
 
-func (c *mqttMiddlewareV1Client) QueryNetworkInformation(ctx context.Context, in *RequestNetworkInformation, opts ...grpc.CallOption) (*ResponseNetworkInformation, error) {
+func (c *mqttMiddlewareV1Client) QueryNetworkInformation(ctx context.Context, in *CommandNetworkInformation, opts ...grpc.CallOption) (*ResponseNetworkInformation, error) {
 	out := new(ResponseNetworkInformation)
 	err := c.cc.Invoke(ctx, "/wcharge_mqtt.MqttMiddlewareV1/QueryNetworkInformation", in, out, opts...)
 	if err != nil {
@@ -104,7 +104,7 @@ func (c *mqttMiddlewareV1Client) QueryNetworkInformation(ctx context.Context, in
 	return out, nil
 }
 
-func (c *mqttMiddlewareV1Client) ResetCabinet(ctx context.Context, in *RequestResetCabinet, opts ...grpc.CallOption) (*ResponseResetCabinet, error) {
+func (c *mqttMiddlewareV1Client) ResetCabinet(ctx context.Context, in *CommandResetCabinet, opts ...grpc.CallOption) (*ResponseResetCabinet, error) {
 	out := new(ResponseResetCabinet)
 	err := c.cc.Invoke(ctx, "/wcharge_mqtt.MqttMiddlewareV1/ResetCabinet", in, out, opts...)
 	if err != nil {
@@ -126,14 +126,14 @@ func (c *mqttMiddlewareV1Client) Subscribe(ctx context.Context, in *Device, opts
 // All implementations must embed UnimplementedMqttMiddlewareV1Server
 // for forward compatibility
 type MqttMiddlewareV1Server interface {
-	PushPowerBank(context.Context, *RequestPush) (*ResponsePush, error)
-	ForcePushPowerBank(context.Context, *RequestPush) (*ResponsePush, error)
-	QueryInventory(context.Context, *RequestInventory) (*ResponseInventory, error)
-	QueryServerInformation(context.Context, *RequestServerInformation) (*ResponseServerInformation, error)
-	QueryCabinetAPN(context.Context, *RequestCabinetAPN) (*ResponseCabinetAPN, error)
-	QuerySIMCardICCID(context.Context, *RequestSIMCardICCID) (*ResponseSIMCardICCID, error)
-	QueryNetworkInformation(context.Context, *RequestNetworkInformation) (*ResponseNetworkInformation, error)
-	ResetCabinet(context.Context, *RequestResetCabinet) (*ResponseResetCabinet, error)
+	PushPowerBank(context.Context, *CommandPush) (*ResponsePush, error)
+	ForcePushPowerBank(context.Context, *CommandPush) (*ResponsePush, error)
+	QueryInventory(context.Context, *CommandInventory) (*ResponseInventory, error)
+	QueryServerInformation(context.Context, *CommandServerInformation) (*ResponseServerInformation, error)
+	QueryCabinetAPN(context.Context, *CommandCabinetAPN) (*ResponseCabinetAPN, error)
+	QuerySIMCardICCID(context.Context, *CommandSIMCardICCID) (*ResponseSIMCardICCID, error)
+	QueryNetworkInformation(context.Context, *CommandNetworkInformation) (*ResponseNetworkInformation, error)
+	ResetCabinet(context.Context, *CommandResetCabinet) (*ResponseResetCabinet, error)
 	Subscribe(context.Context, *Device) (*ResponseString, error)
 	mustEmbedUnimplementedMqttMiddlewareV1Server()
 }
@@ -142,28 +142,28 @@ type MqttMiddlewareV1Server interface {
 type UnimplementedMqttMiddlewareV1Server struct {
 }
 
-func (UnimplementedMqttMiddlewareV1Server) PushPowerBank(context.Context, *RequestPush) (*ResponsePush, error) {
+func (UnimplementedMqttMiddlewareV1Server) PushPowerBank(context.Context, *CommandPush) (*ResponsePush, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PushPowerBank not implemented")
 }
-func (UnimplementedMqttMiddlewareV1Server) ForcePushPowerBank(context.Context, *RequestPush) (*ResponsePush, error) {
+func (UnimplementedMqttMiddlewareV1Server) ForcePushPowerBank(context.Context, *CommandPush) (*ResponsePush, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ForcePushPowerBank not implemented")
 }
-func (UnimplementedMqttMiddlewareV1Server) QueryInventory(context.Context, *RequestInventory) (*ResponseInventory, error) {
+func (UnimplementedMqttMiddlewareV1Server) QueryInventory(context.Context, *CommandInventory) (*ResponseInventory, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryInventory not implemented")
 }
-func (UnimplementedMqttMiddlewareV1Server) QueryServerInformation(context.Context, *RequestServerInformation) (*ResponseServerInformation, error) {
+func (UnimplementedMqttMiddlewareV1Server) QueryServerInformation(context.Context, *CommandServerInformation) (*ResponseServerInformation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryServerInformation not implemented")
 }
-func (UnimplementedMqttMiddlewareV1Server) QueryCabinetAPN(context.Context, *RequestCabinetAPN) (*ResponseCabinetAPN, error) {
+func (UnimplementedMqttMiddlewareV1Server) QueryCabinetAPN(context.Context, *CommandCabinetAPN) (*ResponseCabinetAPN, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryCabinetAPN not implemented")
 }
-func (UnimplementedMqttMiddlewareV1Server) QuerySIMCardICCID(context.Context, *RequestSIMCardICCID) (*ResponseSIMCardICCID, error) {
+func (UnimplementedMqttMiddlewareV1Server) QuerySIMCardICCID(context.Context, *CommandSIMCardICCID) (*ResponseSIMCardICCID, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QuerySIMCardICCID not implemented")
 }
-func (UnimplementedMqttMiddlewareV1Server) QueryNetworkInformation(context.Context, *RequestNetworkInformation) (*ResponseNetworkInformation, error) {
+func (UnimplementedMqttMiddlewareV1Server) QueryNetworkInformation(context.Context, *CommandNetworkInformation) (*ResponseNetworkInformation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryNetworkInformation not implemented")
 }
-func (UnimplementedMqttMiddlewareV1Server) ResetCabinet(context.Context, *RequestResetCabinet) (*ResponseResetCabinet, error) {
+func (UnimplementedMqttMiddlewareV1Server) ResetCabinet(context.Context, *CommandResetCabinet) (*ResponseResetCabinet, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResetCabinet not implemented")
 }
 func (UnimplementedMqttMiddlewareV1Server) Subscribe(context.Context, *Device) (*ResponseString, error) {
@@ -183,7 +183,7 @@ func RegisterMqttMiddlewareV1Server(s grpc.ServiceRegistrar, srv MqttMiddlewareV
 }
 
 func _MqttMiddlewareV1_PushPowerBank_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RequestPush)
+	in := new(CommandPush)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -195,13 +195,13 @@ func _MqttMiddlewareV1_PushPowerBank_Handler(srv interface{}, ctx context.Contex
 		FullMethod: "/wcharge_mqtt.MqttMiddlewareV1/PushPowerBank",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MqttMiddlewareV1Server).PushPowerBank(ctx, req.(*RequestPush))
+		return srv.(MqttMiddlewareV1Server).PushPowerBank(ctx, req.(*CommandPush))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _MqttMiddlewareV1_ForcePushPowerBank_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RequestPush)
+	in := new(CommandPush)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -213,13 +213,13 @@ func _MqttMiddlewareV1_ForcePushPowerBank_Handler(srv interface{}, ctx context.C
 		FullMethod: "/wcharge_mqtt.MqttMiddlewareV1/ForcePushPowerBank",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MqttMiddlewareV1Server).ForcePushPowerBank(ctx, req.(*RequestPush))
+		return srv.(MqttMiddlewareV1Server).ForcePushPowerBank(ctx, req.(*CommandPush))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _MqttMiddlewareV1_QueryInventory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RequestInventory)
+	in := new(CommandInventory)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -231,13 +231,13 @@ func _MqttMiddlewareV1_QueryInventory_Handler(srv interface{}, ctx context.Conte
 		FullMethod: "/wcharge_mqtt.MqttMiddlewareV1/QueryInventory",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MqttMiddlewareV1Server).QueryInventory(ctx, req.(*RequestInventory))
+		return srv.(MqttMiddlewareV1Server).QueryInventory(ctx, req.(*CommandInventory))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _MqttMiddlewareV1_QueryServerInformation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RequestServerInformation)
+	in := new(CommandServerInformation)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -249,13 +249,13 @@ func _MqttMiddlewareV1_QueryServerInformation_Handler(srv interface{}, ctx conte
 		FullMethod: "/wcharge_mqtt.MqttMiddlewareV1/QueryServerInformation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MqttMiddlewareV1Server).QueryServerInformation(ctx, req.(*RequestServerInformation))
+		return srv.(MqttMiddlewareV1Server).QueryServerInformation(ctx, req.(*CommandServerInformation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _MqttMiddlewareV1_QueryCabinetAPN_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RequestCabinetAPN)
+	in := new(CommandCabinetAPN)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -267,13 +267,13 @@ func _MqttMiddlewareV1_QueryCabinetAPN_Handler(srv interface{}, ctx context.Cont
 		FullMethod: "/wcharge_mqtt.MqttMiddlewareV1/QueryCabinetAPN",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MqttMiddlewareV1Server).QueryCabinetAPN(ctx, req.(*RequestCabinetAPN))
+		return srv.(MqttMiddlewareV1Server).QueryCabinetAPN(ctx, req.(*CommandCabinetAPN))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _MqttMiddlewareV1_QuerySIMCardICCID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RequestSIMCardICCID)
+	in := new(CommandSIMCardICCID)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -285,13 +285,13 @@ func _MqttMiddlewareV1_QuerySIMCardICCID_Handler(srv interface{}, ctx context.Co
 		FullMethod: "/wcharge_mqtt.MqttMiddlewareV1/QuerySIMCardICCID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MqttMiddlewareV1Server).QuerySIMCardICCID(ctx, req.(*RequestSIMCardICCID))
+		return srv.(MqttMiddlewareV1Server).QuerySIMCardICCID(ctx, req.(*CommandSIMCardICCID))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _MqttMiddlewareV1_QueryNetworkInformation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RequestNetworkInformation)
+	in := new(CommandNetworkInformation)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -303,13 +303,13 @@ func _MqttMiddlewareV1_QueryNetworkInformation_Handler(srv interface{}, ctx cont
 		FullMethod: "/wcharge_mqtt.MqttMiddlewareV1/QueryNetworkInformation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MqttMiddlewareV1Server).QueryNetworkInformation(ctx, req.(*RequestNetworkInformation))
+		return srv.(MqttMiddlewareV1Server).QueryNetworkInformation(ctx, req.(*CommandNetworkInformation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _MqttMiddlewareV1_ResetCabinet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RequestResetCabinet)
+	in := new(CommandResetCabinet)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -321,7 +321,7 @@ func _MqttMiddlewareV1_ResetCabinet_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/wcharge_mqtt.MqttMiddlewareV1/ResetCabinet",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MqttMiddlewareV1Server).ResetCabinet(ctx, req.(*RequestResetCabinet))
+		return srv.(MqttMiddlewareV1Server).ResetCabinet(ctx, req.(*CommandResetCabinet))
 	}
 	return interceptor(ctx, in, info, handler)
 }

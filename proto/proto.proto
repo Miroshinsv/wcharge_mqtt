@@ -5,14 +5,14 @@ package wcharge_mqtt;
 option go_package = "github.com/Miroshinsv/wcharge_mqtt/gen;gen";
 
 service MqttMiddlewareV1{
-    rpc PushPowerBank(RequestPush) returns (ResponsePush){};
-    rpc ForcePushPowerBank(RequestPush) returns (ResponsePush){};
-    rpc QueryInventory(RequestInventory) returns (ResponseInventory){};
-    rpc QueryServerInformation(RequestServerInformation) returns (ResponseServerInformation){};
-    rpc QueryCabinetAPN(RequestCabinetAPN) returns (ResponseCabinetAPN){};
-    rpc QuerySIMCardICCID(RequestSIMCardICCID) returns (ResponseSIMCardICCID){};
-    rpc QueryNetworkInformation(RequestNetworkInformation) returns (ResponseNetworkInformation){};
-    rpc ResetCabinet(RequestResetCabinet) returns (ResponseResetCabinet){};
+    rpc PushPowerBank(CommandPush) returns (ResponsePush){};
+    rpc ForcePushPowerBank(CommandPush) returns (ResponsePush){};
+    rpc QueryInventory(CommandInventory) returns (ResponseInventory){};
+    rpc QueryServerInformation(CommandServerInformation) returns (ResponseServerInformation){};
+    rpc QueryCabinetAPN(CommandCabinetAPN) returns (ResponseCabinetAPN){};
+    rpc QuerySIMCardICCID(CommandSIMCardICCID) returns (ResponseSIMCardICCID){};
+    rpc QueryNetworkInformation(CommandNetworkInformation) returns (ResponseNetworkInformation){};
+    rpc ResetCabinet(CommandResetCabinet) returns (ResponseResetCabinet){};
     
     rpc Subscribe(Device) returns (ResponseString){};
 }
@@ -54,156 +54,193 @@ enum CommandType {
 
 // Push Power Bank (Force Push)
 message RequestPush {
-    int32 rl_slot = 1;
-    int32 rl_seq = 2;
-    Device device = 3;
+    uint32 rl_slot = 1;
+    uint32 rl_seq = 2;
+}
+
+message CommandPush {
+    RequestPush push = 1;
+    Device device = 2;
 }
 
 message ResponsePush {
-    int32 rl_slot = 1;
-    int64 rl_pbid = 2;
-    int32 rl_result = 3;
-    int32 rl_code = 4;
-    int32 rl_lock = 5;
-    int32 rl_bottom = 6;
-    int32 rl_qoe = 7;
-    int32 rl_vol = 8;
-    int32 rl_cur = 9;
-    int64 rl_seq = 10;
+    uint32 rl_slot = 1;
+    uint64 rl_pbid = 2;
+    uint32 rl_result = 3;
+    uint32 rl_code = 4;
+    uint32 rl_lock = 5;
+    uint32 rl_bottom = 6;
+    uint32 rl_qoe = 7;
+    uint32 rl_vol = 8;
+    uint32 rl_cur = 9;
+    uint32 rl_seq = 10;
 }
 
 // Query the inventory
 message RequestInventory {
-    int64 rl_seq = 1;
+    uint32 rl_seq = 1;
+}
+
+message CommandInventory {
+    RequestInventory invent = 1;
     Device device = 2;
 }
 
 message ResponseInventory {
-    int32 rl_num = 1;
-    int32 rl_slot = 2;
-    int32 rl_idok = 3;
-    int32 rl_lock = 4;
-    int32 rl_bottom = 5;
-    int32 rl_charge = 6;
-    int64 rl_pbid = 7;
-    int32 rl_qoe = 8;
-    int64 rl_vol = 9;
-    int64 rl_cur = 10;
-    int32 rl_tmp = 11;
-    int32 rl_code = 12;
-    int32 rl_revered = 13;
-    int64 rl_seq = 14;
+    uint32 rl_num = 1;
+    uint32 rl_slot = 2;
+    uint32 rl_idok = 3;
+    uint32 rl_lock = 4;
+    uint32 rl_bottom = 5;
+    uint32 rl_charge = 6;
+    uint64 rl_pbid = 7;
+    uint32 rl_qoe = 8;
+    uint32 rl_vol = 9;
+    uint32 rl_cur = 10;
+    uint32 rl_tmp = 11;
+    uint32 rl_code = 12;
+    uint32 rl_revered = 13;
+    uint32 rl_seq = 14;
 }
 
 // Query Server Information
 message RequestServerInformation {
-    int32 rl_type = 1;
-    int64 rl_seq = 2;
-    Device device = 3;
+    uint32 rl_type = 1;
+    uint32 rl_seq = 2;
+}
+
+message CommandServerInformation {
+    RequestServerInformation server_info = 1;
+    Device device = 2;
 }
 
 message ResponseServerInformation {
-    int32 rl_type = 1;
+    uint32 rl_type = 1;
     string rl_add = 2;
     string rl_port = 3;
-    int64 rl_seq = 4;
+    uint32 rl_seq = 4;
 }
 
 // Query Cabinet APN
 message RequestCabinetAPN {
-    int32 rl_index = 1;
-    int64 rl_seq = 2;
-    Device device = 3;
+    uint32 rl_index = 1;
+    uint32 rl_seq = 2;
+}
+
+message CommandCabinetAPN {
+    RequestCabinetAPN cabinet_apn = 1;
+    Device device = 2;
 }
 
 message ResponseCabinetAPN {
-    int32 rl_index = 1;
-    int32 rl_valid = 2;
+    uint32 rl_index = 1;
+    uint32 rl_valid = 2;
     string rl_mccmnc = 3;
     string rl_apn = 4;
     string rl_un = 5;
     string rl_pw = 6;
-    int64 rl_seq = 7;
+    uint32 rl_seq = 7;
 }
 
 // Query SIM Card ICCID
 message RequestSIMCardICCID {
-    int64 rl_seq = 1;
+    uint32 rl_seq = 1;
+}
+
+message CommandSIMCardICCID {
+    RequestSIMCardICCID iccid = 1;
     Device device = 2;
 }
 
 message ResponseSIMCardICCID {
     string rl_iccid = 1;
     string rl_imei = 2;
-    int64 rl_seq = 3;
+    uint32 rl_seq = 3;
 }
 
 // Query Network Information
 message RequestNetworkInformation {
-    int64 rl_seq = 1;
+    uint32 rl_seq = 1;
+}
+
+message CommandNetworkInformation {
+    RequestNetworkInformation net_info = 1;
     Device device = 2;
 }
 
 message ResponseNetworkInformation {
-    int32 rl_type = 1;
-    int32 rl_mode = 2;
-    int32 rl_status = 3;
-    int32 rl_conn = 4;
-    int64 rl_csq = 5;
-    int64 rl_rsrp = 6;
-    int64 rl_sinr = 7;
-    int64 rl_wifi = 8;
-    int64 rl_seq = 9;
+    uint32 rl_type = 1;
+    uint32 rl_mode = 2;
+    uint32 rl_status = 3;
+    uint32 rl_conn = 4;
+    uint64 rl_csq = 5;
+    uint64 rl_rsrp = 6;
+    uint64 rl_sinr = 7;
+    uint64 rl_wifi = 8;
+    uint32 rl_seq = 9;
 }
 
 // Reset Cabinet
 message RequestResetCabinet {
-    int64 rl_seq = 1;
+    uint32 rl_seq = 1;
+}
+
+message CommandResetCabinet {
+    RequestResetCabinet reset_cabinet = 1;
     Device device = 2;
 }
 
 message ResponseResetCabinet {
-    int32 rl_result = 1;
-    int64 rl_seq = 2;
+    uint32 rl_result = 1;
+    uint32 rl_seq = 2;
 }
 
 // Reports !!!
 // Return the Power Bank
 message RequestReturnPowerBank {
-    int32 slot = 1;
-    int32 rl_lock = 2;
-    int32 rl_bottom = 3;
-    int64 rl_pdid = 4;
-    int32 rl_qoe = 5;
-    int64 rl_vol = 6;
-    int64 rl_cur = 7;
-    int32 rl_tmp = 8;
-    int32 rl_limited = 9;
-    int32 rl_code = 10;
-    int64 rl_seq = 11;
-    Device device = 12;
+    uint32 slot = 1;
+    uint32 rl_lock = 2;
+    uint32 rl_bottom = 3;
+    uint64 rl_pdid = 4;
+    uint32 rl_qoe = 5;
+    uint64 rl_vol = 6;
+    uint64 rl_cur = 7;
+    uint32 rl_tmp = 8;
+    uint32 rl_limited = 9;
+    uint32 rl_code = 10;
+    uint32 rl_seq = 11;
+    
+}
+
+message CommandReturnPowerBank {
+    RequestReturnPowerBank return_power_bank = 1;
+    Device device = 2;
 }
 
 message ResponseReturnPowerBank {
-    int32 rl_slot = 1;
-    int32 rl_result = 2;
-    int64 rl_seq = 3;
+    uint32 rl_slot = 1;
+    uint32 rl_result = 2;
+    uint32 rl_seq = 3;
 }
 
 // Report Cabinet Login
 message RequestReportCabinetLogin {
-    int32 rl_count = 1;
-    int32 rl_netmode = 2;
-    int32 rl_conn = 3;
-    int64 rl_csq = 4;
-    int64 rl_rsrp = 5;
-    int64 rl_sinr = 6;
-    int64 rl_wifi = 7;
+    uint32 rl_count = 1;
+    uint32 rl_netmode = 2;
+    uint32 rl_conn = 3;
+    uint64 rl_csq = 4;
+    uint64 rl_rsrp = 5;
+    uint64 rl_sinr = 6;
+    uint64 rl_wifi = 7;
     string rl_commsoftver = 8;
     string rl_commhardver = 9;
     string rl_iccid = 10;
-    int64 rl_seq = 11;
-    Device device = 12;
+    uint32 rl_seq = 11;
+}
+
+message CommandReportCabinetLogin {
+    RequestReportCabinetLogin report_cabinet_login = 1;
+    Device device = 2;
 }
 
 message ResponseReportCabinetLogin {
