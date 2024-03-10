@@ -17,8 +17,8 @@ RUN apk update && \
 
 WORKDIR /opt
 
-COPY --from=builder-mqrr /opt/wcharge_mqtt ./
-COPY --from=builder-mqrr /opt/config/* ./config/
+COPY --from=builder /opt/wcharge_mqtt ./
+COPY --from=builder /opt/config/* ./config/
 
 
 CMD ["./wcharge_mqtt"]
