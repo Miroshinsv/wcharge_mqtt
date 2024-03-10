@@ -24,7 +24,7 @@ func NewMqttV1Server(u *usecase.UseCase, l logger.Interface, cfg *config.Config)
 	s := &mqttv1server{
 		useCase: u,
 		logger:  l,
-		rb:      mqtt.NewMqttController(cfg.MQTT.URL),
+		rb:      mqtt.NewMqttController(cfg.MQTT.URL, l),
 	}
 	return s
 }

@@ -13,6 +13,6 @@ logger:
   rollbar_env: 'wcharge_mqtt'
 
 mqtt:
-  url: 'amqp://user1:user1@localhost:5672/'
+  url: 'amqp://user:pass@localhost:5672/'
   client_id: '10001'
 

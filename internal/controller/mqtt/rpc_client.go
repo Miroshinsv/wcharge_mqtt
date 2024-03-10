@@ -16,7 +16,6 @@ func (mq *MqttController) PushPowerBank(ctx context.Context, r *grpc_v1.CommandP
 	failOnError(err, "Failed to open a channel")
 	defer ch.Close()
 	topik := r.Device.Cabinet + "/" + r.Device.DeviceNumber + "/cmd/" + PUSH_POWER_BANK
-	topik_reply := r.Device.Cabinet + "/" + r.Device.DeviceNumber + "/reply/" + PUSH_POWER_BANK
 	_, err = ch.QueueDeclare(
 		topik, // name
 		false, // durable
@@ -25,7 +24,22 @@ func (mq *MqttController) PushPowerBank(ctx context.Context, r *grpc_v1.CommandP
 		false, // noWait
 		nil,   // arguments
 	)
-	failOnError(err, "Failed to declare a queue")
+	if err != nil {
+		mq.logger.Info("Failed to declare a queue cmd: %w", err)
+	}
+
+	topik_reply := r.Device.Cabinet + "/" + r.Device.DeviceNumber + "/reply/" + PUSH_POWER_BANK
+	_, err = ch.QueueDeclare(
+		topik_reply, // name
+		false,       // durable
+		false,       // delete when unused
+		true,        // exclusive
+		false,       // noWait
+		nil,         // arguments
+	)
+	if err != nil {
+		mq.logger.Info("Failed to declare a queue reply: %w", err)
+	}
 
 	msgs, err := ch.Consume(
 		topik_reply, // queue

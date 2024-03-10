@@ -17,4 +17,3 @@ go.mod
 .vscode
 
 docker-compose.yml
-Dockerfile

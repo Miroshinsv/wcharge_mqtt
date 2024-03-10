@@ -15,7 +15,8 @@ func (s *mqttv1server) PushPowerBank(ctx context.Context, cmd_push *grpc_v1.Comm
 		s.logger.Error(err)
 		return nil, err
 	}
-	return rp, status.Errorf(codes.Unimplemented, "method PushPowerBank not implemented")
+	s.logger.Debug("ReturnPowerbank_mqtt_ok")
+	return rp, nil
 }
 
 func (s *mqttv1server) ForcePushPowerBank(context.Context, *grpc_v1.CommandPush) (*grpc_v1.ResponsePush, error) {
