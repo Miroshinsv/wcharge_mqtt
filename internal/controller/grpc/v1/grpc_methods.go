@@ -23,8 +23,15 @@ func (s *mqttv1server) ForcePushPowerBank(context.Context, *grpc_v1.CommandPush)
 	return nil, status.Errorf(codes.Unimplemented, "method ForcePushPowerBank not implemented")
 }
 
-func (s *mqttv1server) QueryInventory(context.Context, *grpc_v1.CommandInventory) (*grpc_v1.ResponseInventory, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryInventory not implemented")
+func (s *mqttv1server) QueryInventory(ctx context.Context, cmd_push *grpc_v1.CommandInventory) (*grpc_v1.ResponseInventory, error) {
+	s.logger.Debug("ReturnInventory_method_ok")
+	rp, err := s.rb.QueryInventory(ctx, cmd_push)
+	if err != nil {
+		s.logger.Error(err)
+		return nil, err
+	}
+	s.logger.Debug("ReturnInventory_mqtt_ok")
+	return rp, nil
 }
 
 func (s *mqttv1server) QueryServerInformation(context.Context, *grpc_v1.CommandServerInformation) (*grpc_v1.ResponseServerInformation, error) {
