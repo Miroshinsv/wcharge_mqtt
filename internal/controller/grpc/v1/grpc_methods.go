@@ -9,13 +9,13 @@ import (
 )
 
 func (s *mqttv1server) PushPowerBank(ctx context.Context, cmd_push *grpc_v1.CommandPush) (*grpc_v1.ResponsePush, error) {
-	s.logger.Debug("ReturnPowerbank_method_ok")
+	s.logger.Debug("Return_PushPowerbank_method_ok")
 	rp, err := s.rb.PushPowerBank(ctx, cmd_push)
 	if err != nil {
 		s.logger.Error(err)
 		return nil, err
 	}
-	s.logger.Debug("ReturnPowerbank_mqtt_ok")
+	s.logger.Debug("Return_PushPowerbank_mqtt_ok")
 	return rp, nil
 }
 
@@ -24,14 +24,14 @@ func (s *mqttv1server) ForcePushPowerBank(context.Context, *grpc_v1.CommandPush)
 }
 
 func (s *mqttv1server) QueryInventory(ctx context.Context, cmd_push *grpc_v1.CommandInventory) (*grpc_v1.ResponseInventory, error) {
-	s.logger.Debug("ReturnInventory_method_ok")
-	rp, err := s.rb.QueryInventory(ctx, cmd_push)
-	if err != nil {
-		s.logger.Error(err)
-		return nil, err
-	}
-	s.logger.Debug("ReturnInventory_mqtt_ok")
-	return rp, nil
+	//s.logger.Debug("Return_QueryInventory_method_ok")
+	//rp, err := s.rb.QueryInventory(ctx, cmd_push)
+	//if err != nil {
+	//	s.logger.Error(err)
+	//	return nil, err
+	//}
+	//s.logger.Debug("Return_QueryInventory_mqtt_ok")
+	return nil, status.Errorf(codes.Unimplemented, "method QueryInventory not implemented")
 }
 
 func (s *mqttv1server) QueryServerInformation(context.Context, *grpc_v1.CommandServerInformation) (*grpc_v1.ResponseServerInformation, error) {

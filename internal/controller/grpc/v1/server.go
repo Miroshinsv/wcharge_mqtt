@@ -20,11 +20,11 @@ type mqttv1server struct {
 	grpc_v1.UnimplementedMqttMiddlewareV1Server
 }
 
-func NewMqttV1Server(u *usecase.UseCase, l logger.Interface, cfg *config.Config) *mqttv1server {
+func NewMqttV1Server(u *usecase.UseCase, l logger.Interface, cfg *config.Config, server *grpc.Server) *mqttv1server {
 	s := &mqttv1server{
 		useCase: u,
 		logger:  l,
-		rb:      mqtt.NewMqttController(cfg.MQTT.URL, l),
+		rb:      mqtt.NewMqttController(cfg.MQTT.URL, l, server),
 	}
 	return s
 }
@@ -38,7 +38,10 @@ func Start(cfg *config.Config, u *usecase.UseCase, l logger.Interface) {
 
 	g := grpc.NewServer()
 	reflection.Register(g) // разрешить запрос на именование gRPC функций
-	s := NewMqttV1Server(u, l, cfg)
+	s := NewMqttV1Server(u, l, cfg, g)
+
+	//grpc_v1.MainServerV1Client()
+
 	grpc_v1.RegisterMqttMiddlewareV1Server(g, s)
 
 	l.Info(fmt.Sprintf("gRPC server listen on %s port ...", cfg.GRPC.Port))

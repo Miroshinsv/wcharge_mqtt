@@ -1,6 +1,7 @@
 package mqtt
 
 import (
+	"google.golang.org/grpc"
 	"log"
 
 	"github.com/Miroshinsv/wcharge_mqtt/pkg/logger"
@@ -13,9 +14,9 @@ type MqttController struct {
 	seqs   map[string]int // нумерация пакетов по топикам (для rl_seq)
 }
 
-func NewMqttController(url string, l logger.Interface) *MqttController {
+func NewMqttController(url string, l logger.Interface, server *grpc.Server) *MqttController {
 	return &MqttController{
-		rabbit: rabbit.NewMqttService(url),
+		rabbit: rabbit.NewMqttService(url, server),
 		seqs:   map[string]int{},
 		logger: l,
 	}
