@@ -87,20 +87,24 @@ message CommandInventory {
 }
 
 message ResponseInventory {
+    message OneSlotCheck{
+        uint32 rl_slot = 1;
+        uint32 rl_idok = 2;
+        uint32 rl_lock = 3;
+        uint32 rl_bottom = 4;
+        uint32 rl_charge = 5;
+        uint64 rl_pbid = 6;
+        uint32 rl_lvl = 7;
+        uint32 rl_vol = 8;
+        uint32 rl_cur = 9;
+        int32  rl_temp = 10;
+        uint32 rl_code = 11;
+        uint32 rl_reserve = 12;
+    }
+
     uint32 rl_num = 1;
-    uint32 rl_slot = 2;
-    uint32 rl_idok = 3;
-    uint32 rl_lock = 4;
-    uint32 rl_bottom = 5;
-    uint32 rl_charge = 6;
-    uint64 rl_pbid = 7;
-    uint32 rl_qoe = 8;
-    uint32 rl_vol = 9;
-    uint32 rl_cur = 10;
-    uint32 rl_tmp = 11;
-    uint32 rl_code = 12;
-    uint32 rl_revered = 13;
-    uint32 rl_seq = 14;
+    repeated OneSlotCheck slot = 2;
+    uint32 seq_id = 3;
 }
 
 // Query Server Information
@@ -245,4 +249,22 @@ message CommandReportCabinetLogin {
 
 message ResponseReportCabinetLogin {
     bool flag = 1;
+}
+
+message CommandGetAllPowerbankHealthInformation{
+    uint32 rl_seq = 1;
+}
+
+message ReplyGetAllPowerbankHealthInformation {
+    uint32 rl_num = 1;
+    uint32 rl_slot = 2;
+    uint32 rl_read = 3;
+    uint32 rl_vol = 4;
+    uint32 rl_cur = 5;
+    int32 rl_tem = 6;
+    uint32 rl_health = 7;
+    uint32 rl_cycle = 8;
+    uint32 rl_softver = 9;
+    uint32 rl_code = 10;
+    uint32 rl_seq = 11;
 }

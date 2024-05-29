@@ -55,5 +55,5 @@ func (s *mqttv1server) ResetCabinet(context.Context, *grpc_v1.CommandResetCabine
 }
 
 func (s *mqttv1server) Subscribe(context.Context, *grpc_v1.Device) (*grpc_v1.ResponseString, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method SubscribeMqtt not implemented")
 }

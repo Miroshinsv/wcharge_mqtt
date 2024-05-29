@@ -6,25 +6,25 @@ import (
 	//"time"
 
 	grpc_v1 "github.com/Miroshinsv/wcharge_mqtt/gen/v1"
-	_ "github.com/Miroshinsv/wcharge_mqtt/pkg/rabbitmq_servise"
+	_ "github.com/Miroshinsv/wcharge_mqtt/pkg/rabbitmq_service"
 	//amqp "github.com/rabbitmq/amqp091-go"
 	"google.golang.org/protobuf/proto"
 )
 
 func (mq *MqttController) PushPowerBank(ctx context.Context, r *grpc_v1.CommandPush) (*grpc_v1.ResponsePush, error) {
-	//m := r.Push
+	m := &grpc_v1.RequestPush{RlSlot: uint32(4)}
 	//m.RlSeq = uint32(1)
-	//m.RlSlot = uint32(3)
-	//r.Push.RlSlot = uint32(2)
-	messageBytes, err := proto.Marshal(r.Push)
+	//m.Push.RlSlot = uint32(4)
+	//r.Push.RlSlot = uint32(4)
+	messageBytes, err := proto.Marshal(m)
 
-	t := mq.rabbit.Publish("cabinet/RL3H082111030142/cmd/15", messageBytes)
+	t := mq.Rabbit.PublishMqtt("cabinet/RL3H082111030142/cmd/15", messageBytes)
 	//t.Wait()
 
 	if err != nil {
 		mq.logger.Info("Failed to declare a queue reply: %w", err)
 	}
-	tt := mq.rabbit.Subscribe("cabinet/RL3H082111030142/reply/15")
+	tt := mq.Rabbit.SubscribeMqtt("cabinet/RL3H082111030142/reply/15")
 
 	//time.Sleep(10 * time.Second)
 

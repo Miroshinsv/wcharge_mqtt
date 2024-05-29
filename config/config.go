@@ -10,10 +10,11 @@ import (
 type (
 	// Config -.
 	Config struct {
-		App  `yaml:"app"`
-		GRPC `yaml:"grpc"`
-		Log  `yaml:"logger"`
-		MQTT `yaml:"mqtt"`
+		App    `yaml:"app"`
+		GRPC   `yaml:"grpc"`
+		Log    `yaml:"logger"`
+		MQTT   `yaml:"mqtt"`
+		Rabbit `yaml:"rabbit"`
 		// TokenTTL time.Duration `yaml:"tocken_ttl" env-required:"true"`
 	}
 
@@ -38,6 +39,12 @@ type (
 	MQTT struct {
 		URL      string `env-required:"true" yaml:"url"       env:"MQTT_URL"`
 		ClientID string `env-required:"true" yaml:"client_id" env:"MQTT_CLIENT_ID"`
+	}
+
+	// Rabbit -.
+	Rabbit struct {
+		URL      string `env-required:"true" yaml:"url"       env:"RABBIT_URL"`
+		ClientID string `env-required:"true" yaml:"client_id" env:"RABBIT_CLIENT_ID"`
 	}
 )
 
