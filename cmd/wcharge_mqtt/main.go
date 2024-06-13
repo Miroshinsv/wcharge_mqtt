@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gopkg.in/Graylog2/go-gelf.v2/gelf"
 	"log"
 
 	"github.com/Miroshinsv/wcharge_mqtt/config"
@@ -13,6 +14,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("Config error: %s", err)
 	}
+
+	graylogAddr := cfg.Graylog.URL
+	gelfWriter, err := gelf.NewUDPWriter(graylogAddr)
+	if err != nil {
+		log.Fatalf("gelf.NewUDPWriter: %s", err)
+	}
+
+	log.SetOutput(gelfWriter)
 
 	wcharge_mqtt.Run(cfg)
 }

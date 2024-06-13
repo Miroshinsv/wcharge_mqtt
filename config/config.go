@@ -16,6 +16,11 @@ type (
 		MQTT   `yaml:"mqtt"`
 		Rabbit `yaml:"rabbit"`
 		// TokenTTL time.Duration `yaml:"tocken_ttl" env-required:"true"`
+		Graylog `yaml:"graylog"`
+	}
+
+	Graylog struct {
+		URL string `env-required:"true" yaml:"url" env:"GRAYLOG_URL"`
 	}
 
 	// App -.
