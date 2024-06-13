@@ -22,6 +22,7 @@ func main() {
 	}
 
 	log.SetOutput(gelfWriter)
+	log.Println("MQTT. Это информационное сообщение")
 
 	wcharge_mqtt.Run(cfg)
 }
