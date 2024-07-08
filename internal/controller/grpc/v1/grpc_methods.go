@@ -9,13 +9,13 @@ import (
 )
 
 func (s *mqttv1server) PushPowerBank(ctx context.Context, cmd_push *grpc_v1.CommandPush) (*grpc_v1.ResponsePush, error) {
-	s.logger.Debug("Return_PushPowerbank_method_ok")
+	//s.logger.Debug("Return_PushPowerbank_method_ok")
 	rp, err := s.rb.PushPowerBank(ctx, cmd_push)
 	if err != nil {
-		s.logger.Error(err)
+		//s.logger.Error(err)
 		return nil, err
 	}
-	s.logger.Debug("Return_PushPowerbank_mqtt_ok")
+	//s.logger.Debug("Return_PushPowerbank_mqtt_ok")
 	return rp, nil
 }
 

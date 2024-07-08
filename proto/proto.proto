@@ -213,7 +213,20 @@ message RequestReturnPowerBank {
     uint32 rl_limited = 9;
     uint32 rl_code = 10;
     uint32 rl_seq = 11;
-    
+}
+
+message PBReturnReportMsg{
+    uint32 rl_slot = 1;
+    uint32 rl_lock = 2;
+    uint32 rl_bottom = 3;
+    uint64 rl_pbid = 4;
+    uint32 rl_lvl = 5;
+    uint32 rl_vol = 6;
+    uint32 rl_cur = 7;
+    int32  rl_temp = 8;
+    uint32 rl_limited = 9;
+    uint32 rl_code = 10;
+    uint32 rl_seq = 11;
 }
 
 message CommandReturnPowerBank {

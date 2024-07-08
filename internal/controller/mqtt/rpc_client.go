@@ -22,7 +22,7 @@ func (mq *MqttController) PushPowerBank(ctx context.Context, r *grpc_v1.CommandP
 	//t.Wait()
 
 	if err != nil {
-		mq.logger.Info("Failed to declare a queue reply: %w", err)
+		//mq.logger.Info("Failed to declare a queue reply: %w", err)
 	}
 	tt := mq.Rabbit.SubscribeMqtt("cabinet/RL3H082111030142/reply/15")
 
@@ -36,11 +36,11 @@ func (mq *MqttController) PushPowerBank(ctx context.Context, r *grpc_v1.CommandP
 
 	//
 	if t == nil {
-		mq.logger.Info("Failed to declare a queue reply: %w", err)
+		//mq.logger.Info("Failed to declare a queue reply: %w", err)
 	}
 	//
 	if tt == nil {
-		mq.logger.Info("Failed to declare a queue reply: %w", err)
+		//mq.logger.Info("Failed to declare a queue reply: %w", err)
 	}
 
 	//msg := &grpc_v1.ResponsePush{}
@@ -56,7 +56,7 @@ func (mq *MqttController) PushPowerBank(ctx context.Context, r *grpc_v1.CommandP
 	//}
 
 	if err != nil {
-		mq.logger.Info("%s: %s", "Failed to encode message", err)
+		//mq.logger.Info("%s: %s", "Failed to encode message", err)
 	}
 
 	return msg, nil

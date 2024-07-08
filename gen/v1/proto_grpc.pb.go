@@ -27,7 +27,7 @@ const (
 	MqttMiddlewareV1_QuerySIMCardICCID_FullMethodName       = "/wcharge_mqtt.MqttMiddlewareV1/QuerySIMCardICCID"
 	MqttMiddlewareV1_QueryNetworkInformation_FullMethodName = "/wcharge_mqtt.MqttMiddlewareV1/QueryNetworkInformation"
 	MqttMiddlewareV1_ResetCabinet_FullMethodName            = "/wcharge_mqtt.MqttMiddlewareV1/ResetCabinet"
-	MqttMiddlewareV1_Subscribe_FullMethodName               = "/wcharge_mqtt.MqttMiddlewareV1/SubscribeMqtt"
+	MqttMiddlewareV1_Subscribe_FullMethodName               = "/wcharge_mqtt.MqttMiddlewareV1/Subscribe"
 )
 
 // MqttMiddlewareV1Client is the client API for MqttMiddlewareV1 service.
@@ -179,7 +179,7 @@ func (UnimplementedMqttMiddlewareV1Server) ResetCabinet(context.Context, *Comman
 	return nil, status.Errorf(codes.Unimplemented, "method ResetCabinet not implemented")
 }
 func (UnimplementedMqttMiddlewareV1Server) Subscribe(context.Context, *Device) (*ResponseString, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubscribeMqtt not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
 }
 func (UnimplementedMqttMiddlewareV1Server) mustEmbedUnimplementedMqttMiddlewareV1Server() {}
 
@@ -396,7 +396,7 @@ var MqttMiddlewareV1_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MqttMiddlewareV1_ResetCabinet_Handler,
 		},
 		{
-			MethodName: "SubscribeMqtt",
+			MethodName: "Subscribe",
 			Handler:    _MqttMiddlewareV1_Subscribe_Handler,
 		},
 	},
