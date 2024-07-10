@@ -62,87 +62,38 @@ func NewMqttService(path string, server *grpc.Server) *MqttService {
 	}
 
 	c.Subscribe("cabinet/#", 0, func(client mqtt.Client, msg mqtt.Message) {
-		//result := msg.Payload()
-		//// Отправка результата в канал
-		//if result != nil {
-		//	fmt.Printf("")
-		//}
-
 		topicAr := strings.Split(msg.Topic(), "/")
+		if len(topicAr) < 4 {
+			log.Printf("Invalid topic structure: %s", msg.Topic())
+			return
+		}
 
-		//if topicAr[2] == "report" && topicAr[3] == "22" {
+		log.Printf("Received message on topic: %s", msg.Topic())
+		//switch {
+		//case topicAr[2] == "report" && topicAr[3] == "10":
+		//	log.Printf("Matched topic for report 10: %s", msg.Topic())
+		//	ms := &grpc_v1.RequestReportCabinetLogin{}
+		//	err := proto.Unmarshal(msg.Payload(), ms)
+		//	if err != nil {
+		//		log.Printf("MQTT. Ошибка коннекта станции: %s", err)
+		//	} else {
+		//		s.sendNewStationConnect(ms, topicAr[1])
+		//	}
+		//
+		//case topicAr[2] == "report" && topicAr[3] == "22":
+		//	log.Printf("Matched topic for report 22: %s", msg.Topic())
 		//	ms := &grpc_v1.PBReturnReportMsg{}
 		//	err := proto.Unmarshal(msg.Payload(), ms)
 		//	if err != nil {
 		//		log.Printf("MQTT. Ошибка коннекта станции: %s", err)
 		//	}
+		//	//default:
+		//	//	log.Printf("No matching case for topic: %s", msg.Topic())
 		//}
-		//if else topicAr[2] == "report" && topicAr[3] == "10" {
-		//
-		//}
-
-		switch {
-		case topicAr[2] == "report" && topicAr[3] == "10":
-			ms := &grpc_v1.RequestReportCabinetLogin{}
-			err := proto.Unmarshal(msg.Payload(), ms)
-			if err != nil {
-				log.Printf("MQTT. Ошибка коннекта станции: %s", err)
-			}
-
-			time.Sleep(60 * time.Second) // TODO
-
-			s.sendNewStationConnect(ms, topicAr[1])
-		case topicAr[2] == "report" && topicAr[3] == "22":
-			ms := &grpc_v1.PBReturnReportMsg{}
-			err := proto.Unmarshal(msg.Payload(), ms)
-			if err != nil {
-				log.Printf("MQTT. Ошибка коннекта станции: %s", err)
-			}
-		}
-
-		//if msg.Topic() == "cabinet/RL3H082111030142/report/22" {
-		//	//result := msg.Payload()
-		//	ms := &grpc_v1.RequestReturnPowerBank{}
-		//	err := proto.Unmarshal(msg.Payload(), ms)
-		//	if err != nil {
-		//		fmt.Printf("")
-		//	}
-		//}
-		//
-		//if msg.Topic() != "cabinet/RL3H082111030142/report/22" {
-		//	if msg.Topic() == "cabinet/RL3H082111030142/report/10" {
-		//		//result := msg.Payload()
-		//		ms := &grpc_v1.RequestReportCabinetLogin{}
-		//		err := proto.Unmarshal(msg.Payload(), ms)
-		//		if err != nil {
-		//			fmt.Printf("")
-		//		}
-		//	}
-		//}
-
 	})
-
-	//if token := c.SubscribeMqtt("cabinet/RL3H082111030142/reply/15", 0, onMessageReceived); token.Wait() && token.Error() != nil {
-	//	panic(fmt.Sprintf("Error subscribing to topic:", token.Error()))
-	//}
-	//c.SubscribeMqtt("cabinet/RL3H082111030142/replay/15", 1, func(client mqtt.Client, msg mqtt.Message) {
-	//	fmt.Printf("Received message: %s from topic: %s\n", msg.Payload(), msg.Topic())
-	//})
 
 	s.test()
 
-	//messageBytes, _ := proto.Marshal(&grpc_v1.RequestInventory{})
-	//s.PublishMqtt("cabinet/RL3H082111030142/cmd/13", messageBytes)
-	//
-	//res := s.SubscribeMqtt("cabinet/RL3H082111030142/reply/13")
-	//msg := &grpc_v1.ResponseInventory{}
-	//err := proto.Unmarshal(res, msg)
-	//
-	//if err != nil {
-	//	log.Printf("MQTT. Ошибка коннекта станции: %s", err)
-	//}
-
-	//
 	return &s
 }
 
@@ -153,8 +104,6 @@ func (s *MqttService) sendNewStationConnect(ms *grpc_v1.RequestReportCabinetLogi
 	topicReplyGetAllPowerbanks := topicStart + "reply/13"
 
 	messageBytes, _ := proto.Marshal(&grpc_v1.RequestInventory{})
-
-	//time.Sleep(60 * time.Second)
 
 	s.PublishMqtt(topicCmdGetAllPowerbanks, messageBytes)
 	res := s.SubscribeMqtt(topicReplyGetAllPowerbanks)
@@ -242,7 +191,7 @@ func (s *MqttService) test() {
 		Position     int
 		SerialNumber string
 		Capacity     int
-		Used         int
+		Used         bool
 	}
 
 	type FullStation struct {
@@ -358,9 +307,14 @@ func (s *MqttService) SubscribeMqtt(topic string) []byte {
 }
 
 func (s *MqttService) PublishRabbit(topic string, payload interface{}) bool {
-	ch, _ := s.rabbit.Channel()
+	ch, err := s.rabbit.Channel()
+	if err != nil {
+		fmt.Println("Failed to open a channel:", err)
+		return false
+	}
 	defer ch.Close()
-	err := ch.ExchangeDeclare(
+
+	err = ch.ExchangeDeclare(
 		topic,   // name
 		"topic", // type
 		true,    // durable
@@ -369,23 +323,21 @@ func (s *MqttService) PublishRabbit(topic string, payload interface{}) bool {
 		false,   // no-wait
 		nil,     // arguments
 	)
+	if err != nil {
+		fmt.Println("Failed to declare an exchange:", err)
+		return false
+	}
 
-	//messageBytes, err := proto.Marshal(payload)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	//type Data struct {
-	//	T int
-	//	D string
-	//}
-	//
-	//data := Data{
-	//	T: 1,
-	//	D: "adsadasd",
-	//}
-
-	body, _ := json.Marshal(payload)
+	body, err := json.Marshal(payload)
+	if err != nil {
+		fmt.Println("Failed to marshal payload:", err)
+		return false
+	}
 	os.Stdout.Write(body)
+
 	err = ch.PublishWithContext(
 		ctx,
 		topic,
@@ -393,12 +345,12 @@ func (s *MqttService) PublishRabbit(topic string, payload interface{}) bool {
 		false,
 		false,
 		amqp.Publishing{
-			ContentType: "application/octet-stream",
+			ContentType: "application/json", // Используйте правильный тип контента
 			Body:        body,
 		},
 	)
-
 	if err != nil {
+		fmt.Println("Failed to publish message:", err)
 		return false
 	}
 
