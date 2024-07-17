@@ -41,7 +41,7 @@ func NewMqttService(path string, server *grpc.Server) *MqttService {
 
 	cfg, _ := config.NewConfig()
 	cc, _ := amqp.Dial(cfg.Rabbit.URL)
-	defer cc.Close()
+	//defer cc.Close()
 
 	uri, _ := url.Parse(path)
 	opts := mqtt.NewClientOptions()
@@ -69,62 +69,40 @@ func NewMqttService(path string, server *grpc.Server) *MqttService {
 		}
 
 		log.Printf("Received message on topic: %s", msg.Topic())
-		//switch {
-		//case topicAr[2] == "report" && topicAr[3] == "10":
-		//	log.Printf("Matched topic for report 10: %s", msg.Topic())
-		//	ms := &grpc_v1.RequestReportCabinetLogin{}
-		//	err := proto.Unmarshal(msg.Payload(), ms)
-		//	if err != nil {
-		//		log.Printf("MQTT. Ошибка коннекта станции: %s", err)
-		//	} else {
-		//		s.sendNewStationConnect(ms, topicAr[1])
-		//	}
-		//
-		//case topicAr[2] == "report" && topicAr[3] == "22":
-		//	log.Printf("Matched topic for report 22: %s", msg.Topic())
-		//	ms := &grpc_v1.PBReturnReportMsg{}
-		//	err := proto.Unmarshal(msg.Payload(), ms)
-		//	if err != nil {
-		//		log.Printf("MQTT. Ошибка коннекта станции: %s", err)
-		//	}
-		//	//default:
-		//	//	log.Printf("No matching case for topic: %s", msg.Topic())
-		//}
+		switch {
+		case topicAr[2] == "report" && topicAr[3] == "10":
+			log.Printf("Matched topic for report 10: %s", msg.Topic())
+			ms := &grpc_v1.RequestReportCabinetLogin{}
+			err := proto.Unmarshal(msg.Payload(), ms)
+			if err != nil {
+				log.Printf("MQTT. Ошибка коннекта станции: %s", err)
+			} else {
+				s.sendNewStationConnect(ms, topicAr[1])
+			}
+		case topicAr[2] == "report" && topicAr[3] == "22":
+			log.Printf("Matched topic for report 22: %s", msg.Topic())
+			ms := &grpc_v1.PBReturnReportMsg{}
+			err := proto.Unmarshal(msg.Payload(), ms)
+			if err != nil {
+				log.Printf("MQTT. Ошибка коннекта станции: %s", err)
+			}
+
+			topicStart := "cabinet/" + topicAr[1] + "/"
+			topicCmdGetAllPowerbanks := topicStart + "cmd/22"
+			//messageBytes, _ := proto.Marshal(&grpc_v1.{})
+			s.PublishMqtt(topicCmdGetAllPowerbanks, msg.Payload())
+		}
 	})
 
-	s.test()
+	//s.test()
 
 	return &s
 }
 
 func (s *MqttService) sendNewStationConnect(ms *grpc_v1.RequestReportCabinetLogin, stationName string) {
-	topicStart := "cabinet/" + stationName + "/"
-
-	topicCmdGetAllPowerbanks := topicStart + "cmd/13"
-	topicReplyGetAllPowerbanks := topicStart + "reply/13"
-
-	messageBytes, _ := proto.Marshal(&grpc_v1.RequestInventory{})
-
-	s.PublishMqtt(topicCmdGetAllPowerbanks, messageBytes)
-	res := s.SubscribeMqtt(topicReplyGetAllPowerbanks)
-	msg := &grpc_v1.ResponseInventory{}
-	err := proto.Unmarshal(res, msg)
-
-	if err != nil {
-		log.Printf("MQTT. Ошибка коннекта станции: %s", err)
-	}
-
-	type Powerbank struct {
-		Position     int
-		SerialNumber string
-		Capacity     int
-		Used         int
-	}
-
 	type FullStation struct {
 		SerialNumber string
 		Capacity     int
-		Powerbanks   []Powerbank
 	}
 
 	station := FullStation{
@@ -132,20 +110,7 @@ func (s *MqttService) sendNewStationConnect(ms *grpc_v1.RequestReportCabinetLogi
 		Capacity:     int(ms.RlCount),
 	}
 
-	for i, p := range msg.Slot {
-		fmt.Println(i, p)
-		if p.RlPbid != 0 {
-			powerbank := Powerbank{
-				Position:     int(p.RlSlot),
-				SerialNumber: strconv.Itoa(int(p.RlPbid)),
-			}
-			station.Powerbanks = append(station.Powerbanks, powerbank)
-		}
-	}
-
-	log.Printf("Добавлена новая станция: %s", stationName)
-
-	s.PublishRabbit("mqtt_add_station", station)
+	s.PublishRabbit("add-station", station)
 }
 
 // TODO \/
@@ -232,7 +197,7 @@ func (s *MqttService) test() {
 	//}
 
 	//res = s.SubscribeMqtt("test/mqtt")
-	s.PublishRabbit("mqtt_add_station", station)
+	s.PublishRabbit("add-station", station)
 	//
 	//if res != nil {
 	//
@@ -290,7 +255,7 @@ func (s *MqttService) PublishMqtt(topic string, payload interface{}) mqtt.Token 
 
 func (s *MqttService) SubscribeMqtt(topic string) []byte {
 	resultChannel := make(chan []byte)
-	token := s.conn.Subscribe(topic, 1, func(client mqtt.Client, msg mqtt.Message) {
+	token := s.conn.Subscribe(topic, 0, func(client mqtt.Client, msg mqtt.Message) { // TODO
 		result := msg.Payload()
 		// Отправка результата в канал
 		resultChannel <- result
@@ -312,7 +277,7 @@ func (s *MqttService) PublishRabbit(topic string, payload interface{}) bool {
 		fmt.Println("Failed to open a channel:", err)
 		return false
 	}
-	defer ch.Close()
+	//defer ch.Close()
 
 	err = ch.ExchangeDeclare(
 		topic,   // name

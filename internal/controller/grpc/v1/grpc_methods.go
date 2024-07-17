@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"google.golang.org/protobuf/proto"
 
 	grpc_v1 "github.com/Miroshinsv/wcharge_mqtt/gen/v1"
 	"google.golang.org/grpc/codes"
@@ -25,13 +26,28 @@ func (s *mqttv1server) ForcePushPowerBank(context.Context, *grpc_v1.CommandPush)
 
 func (s *mqttv1server) QueryInventory(ctx context.Context, cmd_push *grpc_v1.CommandInventory) (*grpc_v1.ResponseInventory, error) {
 	//s.logger.Debug("Return_QueryInventory_method_ok")
-	//rp, err := s.rb.QueryInventory(ctx, cmd_push)
+	//rp, err := s.rb.Rabbit.QueryInventory(ctx, cmd_push)
 	//if err != nil {
-	//	s.logger.Error(err)
+	////	s.logger.Error(err)
 	//	return nil, err
 	//}
 	//s.logger.Debug("Return_QueryInventory_mqtt_ok")
-	return nil, status.Errorf(codes.Unimplemented, "method QueryInventory not implemented")
+
+	topicStart := "cabinet/" + cmd_push.Device.DeviceNumber + "/"
+
+	topicCmdGetAllPowerbanks := topicStart + "cmd/13"
+	topicReplyGetAllPowerbanks := topicStart + "reply/13"
+	messageBytes, _ := proto.Marshal(&grpc_v1.RequestInventory{})
+	s.rb.Rabbit.PublishMqtt(topicCmdGetAllPowerbanks, messageBytes)
+	res := s.rb.Rabbit.SubscribeMqtt(topicReplyGetAllPowerbanks)
+	msg := &grpc_v1.ResponseInventory{}
+	err := proto.Unmarshal(res, msg)
+
+	if err != nil {
+
+	}
+
+	return msg, nil
 }
 
 func (s *mqttv1server) QueryServerInformation(context.Context, *grpc_v1.CommandServerInformation) (*grpc_v1.ResponseServerInformation, error) {
