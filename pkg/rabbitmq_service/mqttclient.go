@@ -12,17 +12,12 @@ import (
 	"strconv"
 	"time"
 
-	//"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"strings"
 
-	//mqtt "git.eclipse.org/gitroot/paho/org.eclipse.paho.mqtt.golang.git"
-	//"github.com/streadway/amqp"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"net/url"
-	// "google.golang.org/protobuf/proto"
-	//grpc_v1 "github.com/Miroshinsv/wcharge_mqtt/gen/v1"
 )
 
 // MqttService представляет сервис для работы с MQTT контроллером
@@ -31,10 +26,6 @@ type MqttService struct {
 	server *grpc.Server
 	rabbit *amqp.Connection
 }
-
-//func onMessageReceived(client mqtt.Client, message mqtt.Message) {
-//	fmt.Printf("Received message: %s from topic: %s\n", message.Payload(), message.Topic())
-//}
 
 // NewMqttService создает и возвращает новый экземпляр сервиса
 func NewMqttService(path string, server *grpc.Server) *MqttService {
@@ -90,7 +81,15 @@ func NewMqttService(path string, server *grpc.Server) *MqttService {
 			topicStart := "cabinet/" + topicAr[1] + "/"
 			topicCmdGetAllPowerbanks := topicStart + "cmd/22"
 			//messageBytes, _ := proto.Marshal(&grpc_v1.{})
+
+			// TODO
+			//ms.RlSlot - слот
+			//ms.RlPbid - повербанк айди
+			//topicAr[1] - код станции везврата
+
 			s.PublishMqtt(topicCmdGetAllPowerbanks, msg.Payload())
+			s.sendReturnPowerBank(ms, topicAr[1])
+
 		}
 	})
 
@@ -99,154 +98,170 @@ func NewMqttService(path string, server *grpc.Server) *MqttService {
 	return &s
 }
 
+const (
+	ADD_STATION      = "add-station"
+	RETURN_POWERBANK = "return-powerbank"
+)
+
 func (s *MqttService) sendNewStationConnect(ms *grpc_v1.RequestReportCabinetLogin, stationName string) {
-	type FullStation struct {
+	type fullStation struct {
 		SerialNumber string
 		Capacity     int
 	}
-
-	station := FullStation{
+	station := fullStation{
 		SerialNumber: stationName,
 		Capacity:     int(ms.RlCount),
 	}
+	s.PublishRabbit(ADD_STATION, station)
+}
 
-	s.PublishRabbit("add-station", station)
+func (s *MqttService) sendReturnPowerBank(ms *grpc_v1.PBReturnReportMsg, stationName string) {
+	type returnedPowerbank struct {
+		Station      string
+		Slot         int
+		SerialNumber string
+	}
+	powerbank := returnedPowerbank{
+		Station:      stationName,
+		Slot:         int(ms.RlSlot),
+		SerialNumber: strconv.FormatUint(ms.RlPbid, 10),
+	}
+	s.PublishRabbit(RETURN_POWERBANK, powerbank)
 }
 
 // TODO \/
-func (s *MqttService) test() {
-	topicAr := strings.Split("cabinet/RL3H082111030142/report/10", "/")
-	ms := &grpc_v1.RequestReportCabinetLogin{
-		RlCount:       8, // Capacity
-		RlNetmode:     1,
-		RlConn:        3,
-		RlCsq:         62,
-		RlRsrp:        171,
-		RlSinr:        108,
-		RlWifi:        0,
-		RlCommsoftver: "RL1.M6.08.04",
-		RlCommhardver: "ff",
-		RlIccid:       "89701010050648321412",
-		RlSeq:         1,
-	}
-
-	if topicAr != nil {
-	}
-	if ms != nil {
-	}
-
-	// 						   SerialNumber
-	topicStart := "cabinet/" + topicAr[1] + "/"
-
-	topicCmdGetAllPowerbanks := topicStart + "cmd/13"
-	topicReplyGetAllPowerbanks := topicStart + "reply/13"
-
-	messageBytes, _ := proto.Marshal(&grpc_v1.RequestInventory{})
-
-	s.PublishMqtt(topicCmdGetAllPowerbanks, messageBytes)
-	res := s.SubscribeMqtt(topicReplyGetAllPowerbanks)
-	msg := &grpc_v1.ResponseInventory{}
-	err := proto.Unmarshal(res, msg)
-
-	if err != nil {
-
-	}
-
-	type Powerbank struct {
-		Position     int
-		SerialNumber string
-		Capacity     int
-		Used         bool
-	}
-
-	type FullStation struct {
-		SerialNumber string
-		Capacity     int
-		Powerbanks   []Powerbank
-	}
-
-	station := FullStation{
-		SerialNumber: topicAr[1],
-		Capacity:     int(ms.RlCount),
-	}
-
-	for i, p := range msg.Slot {
-		fmt.Println(i, p)
-		if p.RlPbid != 0 {
-			powerbank := Powerbank{
-				Position:     int(p.RlSlot),
-				SerialNumber: strconv.Itoa(int(p.RlPbid)),
-			}
-			station.Powerbanks = append(station.Powerbanks, powerbank)
-		}
-	}
-
-	log.Printf("Добавлена новая станция: %s", topicAr[1])
-
-	//if station.Capacity != 0 {
-	//}
-
-	//type Data struct {
-	//	T int
-	//	D string
-	//}
-	//
-	//data := Data{
-	//	T: 1,
-	//	D: "adsadasd",
-	//}
-
-	//res = s.SubscribeMqtt("test/mqtt")
-	s.PublishRabbit("add-station", station)
-	//
-	//if res != nil {
-	//
-	//}
-	//ch, _ := s.rabbit.Channel()
-	//defer ch.Close()
-	//ch.QueueDeclare(
-	//	"test/rabbit", // name
-	//	false,         // durable
-	//	false,         // delete when unused
-	//	true,          // exclusive
-	//	false,         // noWait
-	//	nil,           // arguments
-	//)
-	//
-	//msgs, err := ch.Consume(
-	//	"test/rabbit", // queue
-	//	"",            // consumer
-	//	true,          // auto-ack
-	//	false,         // exclusive
-	//	false,         // no-local
-	//	false,         // no-wait
-	//	nil,           // args
-	//)
-	//
-	//body, _ := json.Marshal(data)
-	//ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	//defer cancel()
-	//ch.PublishWithContext(
-	//	ctx,
-	//	"",
-	//	"test/rabbit",
-	//	false,
-	//	false,
-	//	amqp.Publishing{
-	//		ContentType: "application/json",
-	//		Body:        body,
-	//	},
-	//)
-	//
-	//var mssg proto.Message
-	//for d := range msgs {
-	//	err := json.Unmarshal(d.Body, mssg)
-	//	if err != nil {
-	//		continue
-	//	}
-	//}
-}
-
+//func (s *MqttService) test() {
+//	topicAr := strings.Split("cabinet/RL3H082111030142/report/10", "/")
+//	ms := &grpc_v1.RequestReportCabinetLogin{
+//		RlCount:       8, // Capacity
+//		RlNetmode:     1,
+//		RlConn:        3,
+//		RlCsq:         62,
+//		RlRsrp:        171,
+//		RlSinr:        108,
+//		RlWifi:        0,
+//		RlCommsoftver: "RL1.M6.08.04",
+//		RlCommhardver: "ff",
+//		RlIccid:       "89701010050648321412",
+//		RlSeq:         1,
+//	}
+//
+//	if topicAr != nil {
+//	}
+//	if ms != nil {
+//	}
+//
+//	// 						   SerialNumber
+//	topicStart := "cabinet/" + topicAr[1] + "/"
+//
+//	topicCmdGetAllPowerbanks := topicStart + "cmd/13"
+//	topicReplyGetAllPowerbanks := topicStart + "reply/13"
+//
+//	messageBytes, _ := proto.Marshal(&grpc_v1.RequestInventory{})
+//
+//	s.PublishMqtt(topicCmdGetAllPowerbanks, messageBytes)
+//	res := s.SubscribeMqtt(topicReplyGetAllPowerbanks)
+//	msg := &grpc_v1.ResponseInventory{}
+//	err := proto.Unmarshal(res, msg)
+//
+//	if err != nil {
+//
+//	}
+//
+//	type Powerbank struct {
+//		Position     int
+//		SerialNumber string
+//		Capacity     int
+//		Used         bool
+//	}
+//
+//	type FullStation struct {
+//		SerialNumber string
+//		Capacity     int
+//		Powerbanks   []Powerbank
+//	}
+//
+//	station := FullStation{
+//		SerialNumber: topicAr[1],
+//		Capacity:     int(ms.RlCount),
+//	}
+//
+//	for i, p := range msg.Slot {
+//		fmt.Println(i, p)
+//		if p.RlPbid != 0 {
+//			powerbank := Powerbank{
+//				Position:     int(p.RlSlot),
+//				SerialNumber: strconv.Itoa(int(p.RlPbid)),
+//			}
+//			station.Powerbanks = append(station.Powerbanks, powerbank)
+//		}
+//	}
+//
+//	log.Printf("Добавлена новая станция: %s", topicAr[1])
+//
+//	//if station.Capacity != 0 {
+//	//}
+//
+//	//type Data struct {
+//	//	T int
+//	//	D string
+//	//}
+//	//
+//	//data := Data{
+//	//	T: 1,
+//	//	D: "adsadasd",
+//	//}
+//
+//	//res = s.SubscribeMqtt("test/mqtt")
+//	s.PublishRabbit("add-station", station)
+//	//
+//	//if res != nil {
+//	//
+//	//}
+//	//ch, _ := s.rabbit.Channel()
+//	//defer ch.Close()
+//	//ch.QueueDeclare(
+//	//	"test/rabbit", // name
+//	//	false,         // durable
+//	//	false,         // delete when unused
+//	//	true,          // exclusive
+//	//	false,         // noWait
+//	//	nil,           // arguments
+//	//)
+//	//
+//	//msgs, err := ch.Consume(
+//	//	"test/rabbit", // queue
+//	//	"",            // consumer
+//	//	true,          // auto-ack
+//	//	false,         // exclusive
+//	//	false,         // no-local
+//	//	false,         // no-wait
+//	//	nil,           // args
+//	//)
+//	//
+//	//body, _ := json.Marshal(data)
+//	//ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+//	//defer cancel()
+//	//ch.PublishWithContext(
+//	//	ctx,
+//	//	"",
+//	//	"test/rabbit",
+//	//	false,
+//	//	false,
+//	//	amqp.Publishing{
+//	//		ContentType: "application/json",
+//	//		Body:        body,
+//	//	},
+//	//)
+//	//
+//	//var mssg proto.Message
+//	//for d := range msgs {
+//	//	err := json.Unmarshal(d.Body, mssg)
+//	//	if err != nil {
+//	//		continue
+//	//	}
+//	//}
+//}
 // TODO /\
 
 func (s *MqttService) PublishMqtt(topic string, payload interface{}) mqtt.Token {
@@ -293,8 +308,8 @@ func (s *MqttService) PublishRabbit(topic string, payload interface{}) bool {
 		return false
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	//defer cancel()
 
 	body, err := json.Marshal(payload)
 	if err != nil {

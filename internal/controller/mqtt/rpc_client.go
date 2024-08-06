@@ -12,7 +12,7 @@ import (
 )
 
 func (mq *MqttController) PushPowerBank(ctx context.Context, r *grpc_v1.CommandPush) (*grpc_v1.ResponsePush, error) {
-	m := &grpc_v1.RequestPush{RlSlot: uint32(4)}
+	m := &grpc_v1.RequestPush{RlSlot: r.Push.RlSlot}
 	//m.RlSeq = uint32(1)
 	//m.Push.RlSlot = uint32(4)
 	//r.Push.RlSlot = uint32(4)
